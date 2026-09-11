@@ -21,7 +21,7 @@ jobs:
           cache: 'npm'
 
       - name: 依存パッケージをインストール
-        run: npm ci
+        run: npm install
 
       - name: Playwright (Chromium) をインストール
         run: npx playwright install chromium --with-deps
