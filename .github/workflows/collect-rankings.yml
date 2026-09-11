@@ -2,8 +2,8 @@ name: Google Play ランキング取得
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # 毎日 UTC 00:00 = JST 09:00
-  workflow_dispatch:        # 手動実行ボタンも有効
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   collect-rankings:
@@ -18,7 +18,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: 依存パッケージをインストール
         run: npm install
