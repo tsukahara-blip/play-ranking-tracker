@@ -4,25 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>カジノランキング</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #0f172a;
-    --surface: #1e293b;
-    --surface2: #273449;
-    --border: #334155;
-    --text: #f1f5f9;
-    --text-sub: #94a3b8;
-    --text-dim: #64748b;
-    --accent: #6366f1;
-    --good: #10b981;
-    --bad: #f43f5e;
-    --c1: #6366f1;
-    --c2: #0ea5e9;
-    --c3: #10b981;
-    --c4: #f59e0b;
-    --c5: #ec4899;
+    --bg: #111318;
+    --surface: #ffffff;
+    --surface2: #f4f6f9;
+    --border: #e2e8f0;
+    --text: #1a202c;
+    --text-sub: #4a5568;
+    --text-dim: #a0aec0;
+    --header-text: #f1f5f9;
+    --header-sub: #94a3b8;
+    --c1: #5a67d8;
+    --c2: #3182ce;
+    --c3: #38a169;
+    --c4: #d69e2e;
+    --c5: #d53f8c;
+    --good: #38a169;
+    --bad: #e53e3e;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,11 +31,11 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
+    font-family: 'Noto Sans JP', 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
     min-height: 100vh;
-    padding: 24px 20px 48px;
+    padding: 32px 24px 64px;
   }
 
   .header {
@@ -45,30 +46,35 @@
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
   }
 
   .header-left h1 {
     font-size: 22px;
     font-weight: 700;
+    color: var(--header-text);
     letter-spacing: -0.3px;
-    color: var(--text);
   }
 
   .header-left p {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 3px;
+    font-size: 13px;
+    color: var(--header-sub);
+    margin-top: 4px;
   }
 
   .updated {
-    font-size: 12px;
-    color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--header-sub);
+    background: rgba(255,255,255,0.07);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
   }
 
   .tiles {
     max-width: 1100px;
-    margin: 0 auto 24px;
+    margin: 0 auto 20px;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 12px;
@@ -80,9 +86,10 @@
   .tile {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
+    border-radius: 12px;
+    padding: 20px;
     border-top: 3px solid var(--c1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
   }
 
   .tile:nth-child(1) { border-top-color: var(--c1); }
@@ -92,31 +99,33 @@
   .tile:nth-child(5) { border-top-color: var(--c5); }
 
   .tile-name {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-sub);
     font-weight: 500;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     line-height: 1.4;
     min-height: 2.8em;
   }
 
   .tile-rank {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 36px;
-    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    font-size: 44px;
+    font-weight: 700;
     line-height: 1;
     color: var(--text);
+    font-variant-numeric: tabular-nums;
   }
 
-  .tile-rank.out { font-size: 18px; color: var(--text-dim); }
+  .tile-rank.out {
+    font-size: 18px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
 
   .tile-delta {
-    font-size: 12px;
-    font-weight: 500;
-    margin-top: 6px;
-    display: flex;
-    align-items: center;
-    gap: 3px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 8px;
   }
 
   .delta-up   { color: var(--good); }
@@ -125,20 +134,21 @@
 
   .card {
     max-width: 1100px;
-    margin: 0 auto 20px;
+    margin: 0 auto 16px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 24px 28px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
   }
 
   .card-title {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-sub);
+    margin-bottom: 18px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    margin-bottom: 16px;
   }
 
   .chart-wrap {
@@ -149,28 +159,35 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 14px;
   }
 
   th {
     text-align: left;
-    padding: 8px 10px;
+    padding: 11px 14px;
     color: var(--text-dim);
-    font-weight: 500;
-    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--border);
     white-space: nowrap;
+    background: var(--surface2);
   }
 
+  th:first-child { border-radius: 6px 0 0 0; }
+  th:last-child  { border-radius: 0 6px 0 0; }
+
   td {
-    padding: 9px 10px;
-    border-bottom: 1px solid rgba(51,65,85,0.5);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
   }
 
   td:first-child {
-    font-family: 'Inter', sans-serif;
     color: var(--text-sub);
+    font-weight: 500;
   }
 
   tr:last-child td { border-bottom: none; }
@@ -193,11 +210,11 @@
   }
 
   .error-msg {
-    background: rgba(244,63,94,0.1);
-    border: 1px solid rgba(244,63,94,0.3);
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
     border-radius: 8px;
     padding: 16px;
-    color: #fda4af;
+    color: #c53030;
     font-size: 13px;
     max-width: 1100px;
     margin: 0 auto;
@@ -211,7 +228,7 @@
 <div class="header">
   <div class="header-left">
     <h1>Google Play カジノ有料ランキング</h1>
-    <p>コムシード株式会社 5タイトル 毎日 09:00 JST 自動取得</p>
+    <p>コムシード株式会社 5タイトル｜毎日 09:00 JST 自動取得</p>
   </div>
   <div class="updated" id="updated">読み込み中...</div>
 </div>
@@ -231,7 +248,7 @@
   <div class="card-title">データ一覧</div>
   <div class="table-wrap">
     <table id="table">
-      <tbody><tr><td colspan="6" class="loading">読み込み中...</td></tr></tbody>
+      <tbody><tr><td colspan="7" class="loading">読み込み中...</td></tr></tbody>
     </table>
   </div>
 </div>
@@ -241,11 +258,11 @@ const SPREADSHEET_ID = '1gjmiYLcS2S2HEzdvafeiPJPbeeZiKtfUQ1QKYsXpYpM';
 const SHEET_NAME = 'ランキング推移';
 
 const APPS = [
-  { key: 'pssinoni3',    name: 'スマスロ 新鬼武者3',              color: '#6366f1' },
-  { key: 'p_sg8',        name: 'P戦国乙女7',                      color: '#0ea5e9' },
-  { key: 'psvvv2',       name: 'パチスロ ヴァルヴレイヴ2',        color: '#10b981' },
-  { key: 'pskaguya',     name: 'パチスロ かぐや様',               color: '#f59e0b' },
-  { key: 'karakuri2maou','name': 'からくりサーカス2 魔王ver.',     color: '#ec4899' },
+  { name: 'スマスロ 新鬼武者3',          color: '#5a67d8' },
+  { name: 'P戦国乙女7',                  color: '#3182ce' },
+  { name: 'パチスロ ヴァルヴレイヴ2',    color: '#38a169' },
+  { name: 'パチスロ かぐや様',           color: '#e07b00' },
+  { name: 'からくりサーカス2 魔王ver.',  color: '#d53f8c' },
 ];
 
 function rankLabel(v) {
@@ -256,10 +273,10 @@ function rankLabel(v) {
 
 function deltaLabel(cur, prev) {
   if (cur === '圏外' || prev === '圏外' || cur == null || prev == null) return null;
-  const diff = parseInt(prev) - parseInt(cur); // positive = up
+  const diff = parseInt(prev) - parseInt(cur);
   if (isNaN(diff) || diff === 0) return { text: '±0', cls: 'delta-flat' };
-  if (diff > 0) return { text: '▲' + diff, cls: 'delta-up' };
-  return { text: '▼' + Math.abs(diff), cls: 'delta-down' };
+  if (diff > 0) return { text: '▲' + diff + ' 上昇', cls: 'delta-up' };
+  return { text: '▼' + Math.abs(diff) + ' 下降', cls: 'delta-down' };
 }
 
 async function loadData() {
@@ -270,14 +287,10 @@ async function loadData() {
 
   const rows = json.table.rows.map(r => r.c.map(c => {
     if (!c || c.v === null || c.v === undefined) return '';
-    // gviz API returns dates as Date objects — use formatted value (c.f) when available
     if (c.f !== null && c.f !== undefined) return String(c.f);
     return String(c.v);
   }));
   const headers = json.table.cols.map(c => c.label);
-
-  // 日付列 + 5アプリ列 + 時刻列
-  // headers: ['日付', app1, app2, ..., app5, '取得時刻']
   return { headers, rows };
 }
 
@@ -286,17 +299,17 @@ function buildTiles(rows) {
   const prev   = rows.length > 1 ? rows[rows.length - 2] : null;
 
   const html = APPS.map((app, i) => {
-    const cur  = rankLabel(latest[i + 1]);
-    const pre  = prev ? rankLabel(prev[i + 1]) : null;
+    const cur   = rankLabel(latest[i + 1]);
+    const pre   = prev ? rankLabel(prev[i + 1]) : null;
     const delta = prev ? deltaLabel(cur, pre) : null;
 
     const rankHtml = cur === '圏外'
       ? `<div class="tile-rank out">圏外</div>`
-      : `<div class="tile-rank">${cur}<span style="font-size:14px;color:var(--text-sub);margin-left:2px">位</span></div>`;
+      : `<div class="tile-rank">${cur}<span style="font-size:17px;color:var(--text-sub);margin-left:4px;font-weight:500">位</span></div>`;
 
     const deltaHtml = delta
       ? `<div class="tile-delta ${delta.cls}">${delta.text}</div>`
-      : `<div class="tile-delta delta-flat">初回</div>`;
+      : `<div class="tile-delta delta-flat">前日比なし</div>`;
 
     return `<div class="tile">
       <div class="tile-name">${app.name}</div>
@@ -312,20 +325,35 @@ function buildChart(rows) {
   const recent = rows.slice(-30);
   const labels = recent.map(r => r[0].replace(/^\d{4}\//, ''));
 
-  const datasets = APPS.map((app, i) => ({
-    label: app.name,
-    data: recent.map(r => {
+  const datasets = APPS.map((app, i) => {
+    const data = recent.map(r => {
       const v = parseInt(r[i + 1]);
       return isNaN(v) ? null : v;
-    }),
-    borderColor: app.color,
-    backgroundColor: app.color + '20',
-    borderWidth: 2,
-    pointRadius: 3,
-    pointHoverRadius: 5,
-    tension: 0.3,
-    spanGaps: true,
-  }));
+    });
+    return {
+      label: app.name,
+      data,
+      borderColor: app.color,
+      backgroundColor: app.color + '18',
+      borderWidth: 2,
+      pointRadius: data.map(v => v === null ? 0 : 3),
+      pointHoverRadius: 6,
+      tension: 0.3,
+      spanGaps: true,
+      segment: {
+        borderDash: ctx => {
+          const prev = ctx.p0.parsed.y;
+          const next = ctx.p1.parsed.y;
+          return (prev === null || next === null) ? [4, 4] : undefined;
+        },
+        borderColor: ctx => {
+          const prev = ctx.p0.parsed.y;
+          const next = ctx.p1.parsed.y;
+          return (prev === null || next === null) ? app.color + '80' : app.color;
+        },
+      },
+    };
+  });
 
   const ctx = document.getElementById('chart').getContext('2d');
   new Chart(ctx, {
@@ -340,33 +368,33 @@ function buildChart(rows) {
           reverse: true,
           min: 1,
           ticks: {
-            color: '#64748b',
+            color: '#a0aec0',
             callback: v => v + '位',
             stepSize: 5,
           },
-          grid: { color: 'rgba(51,65,85,0.5)' },
+          grid: { color: 'rgba(226,232,240,0.8)' },
         },
         x: {
-          ticks: { color: '#64748b', maxRotation: 45 },
-          grid: { color: 'rgba(51,65,85,0.3)' },
+          ticks: { color: '#a0aec0', maxRotation: 45 },
+          grid: { color: 'rgba(226,232,240,0.5)' },
         },
       },
       plugins: {
         legend: {
           position: 'bottom',
           labels: {
-            color: '#94a3b8',
+            color: '#4a5568',
             boxWidth: 12,
             padding: 16,
             font: { size: 11 },
           },
         },
         tooltip: {
-          backgroundColor: '#1e293b',
-          borderColor: '#334155',
+          backgroundColor: '#ffffff',
+          borderColor: '#e2e8f0',
           borderWidth: 1,
-          titleColor: '#f1f5f9',
-          bodyColor: '#94a3b8',
+          titleColor: '#1a202c',
+          bodyColor: '#4a5568',
           callbacks: {
             label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y != null ? ctx.parsed.y + '位' : '圏外'}`,
           },
@@ -376,13 +404,12 @@ function buildChart(rows) {
   });
 }
 
-function buildTable(rows, headers) {
+function buildTable(rows) {
   const recent = [...rows].reverse().slice(0, 60);
-  const appNames = APPS.map(a => a.name);
 
   const thead = `<thead><tr>
     <th>日付</th>
-    ${APPS.map((a, i) => `<th><span class="dot" style="background:${a.color}"></span>${a.name}</th>`).join('')}
+    ${APPS.map(a => `<th><span class="dot" style="background:${a.color}"></span>${a.name}</th>`).join('')}
     <th>取得時刻</th>
   </tr></thead>`;
 
