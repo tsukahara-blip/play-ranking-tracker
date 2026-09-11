@@ -1,0 +1,13 @@
+{
+  "name": "play-ranking-tracker",
+  "version": "1.0.0",
+  "description": "Google Play カジノランキング自動取得",
+  "main": "src/collect.js",
+  "scripts": {
+    "start": "node src/collect.js"
+  },
+  "dependencies": {
+    "playwright": "^1.47.0",
+    "googleapis": "^140.0.0"
+  }
+}
