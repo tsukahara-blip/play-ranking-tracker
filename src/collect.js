@@ -3,9 +3,12 @@
  * コムシード株式会社 5タイトル対象
  */
 
-const { chromium } = require('playwright');
+const gplay = require('google-play-scraper');
 const { google } = require('googleapis');
 
+// ==========================================
+// 対象アプリ定義
+// ==========================================
 const TARGET_APPS = {
   'net.commseed.pssinoni3':     'スマスロ 新鬼武者3',
   'net.commseed.p_sg8':         'P戦国乙女7 終焉の関ヶ原 平和',
@@ -22,98 +25,45 @@ const APP_ORDER = [
   'net.commseed.karakuri2maou',
 ];
 
+// ==========================================
+// Google Play からランキング取得
+// ==========================================
 async function fetchRankings() {
   const rankings = {};
-  APP_ORDER.forEach(id => rankings[id] = 201);
+  APP_ORDER.forEach(id => rankings[id] = 201); // 201 = 圏外
 
-  const browser = await chromium.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  console.log('Google Play 有料カジノ ランキングを取得中...');
+
+  const apps = await gplay.list({
+    category: gplay.category.GAME_CASINO,
+    collection: gplay.collection.TOP_PAID,
+    num: 200,
+    country: 'jp',
+    lang: 'ja',
+    throttle: 10,
   });
 
-  const context = await browser.newContext({
-    locale: 'ja-JP',
-    extraHTTPHeaders: { 'Accept-Language': 'ja,en-US;q=0.9' },
-  });
+  console.log(`取得したアプリ数: ${apps.length}`);
 
-  const page = await context.newPage();
-  let rankingData = null;
-
-  page.on('response', async (response) => {
-    const url = response.url();
-    if (url.includes('batchexecute') && url.includes('vyAe2')) {
-      try {
-        const text = await response.text();
-        if (text.length > 1000) {
-          rankingData = text;
-          console.log(`batchexecute レスポンス取得: ${text.length} bytes`);
-        }
-      } catch (e) {}
-    }
-  });
-
-  console.log('Google Play に移動中...');
-  await page.goto('https://play.google.com/store/apps/category/GAME_CASINO?hl=ja&gl=JP', {
-    waitUntil: 'networkidle',
-    timeout: 60000,
-  });
-
-  try {
-    const paidTab = await page.locator('text=有料').first();
-    await paidTab.waitFor({ timeout: 10000 });
-    await paidTab.click();
-    console.log('「有料」タブをクリックしました');
-    await page.waitForTimeout(4000);
-  } catch (e) {
-    console.log('「有料」タブが見つかりません:', e.message);
-    await page.screenshot({ path: 'debug.png' });
-  }
-
-  await browser.close();
-
-  if (!rankingData) {
-    throw new Error('ランキングデータを取得できませんでした。debug.png を確認してください。');
-  }
-
-  const allIds = [];
-  const seen = {};
-  const marker = '",7]';
-  let idx = 0;
-
-  while (true) {
-    const pos = rankingData.indexOf(marker, idx);
-    if (pos < 0) break;
-    let start = pos - 1;
-    let found = false;
-    for (let i = start; i >= Math.max(0, pos - 120); i--) {
-      if (rankingData[i] === '"') { start = i + 1; found = true; break; }
-    }
-    if (found) {
-      const appId = rankingData.substring(start, pos);
-      if (/^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z0-9_]+)+$/.test(appId) &&
-          appId.length < 100 && !seen[appId]) {
-        seen[appId] = true;
-        allIds.push(appId);
-      }
-    }
-    idx = pos + marker.length;
-  }
-
-  console.log(`抽出されたアプリ数: ${allIds.length}`);
-
-  allIds.forEach((appId, i) => {
-    if (TARGET_APPS[appId] !== undefined) {
-      rankings[appId] = i + 1;
-      console.log(`  ${i + 1}位: ${TARGET_APPS[appId]}`);
+  apps.forEach((app, i) => {
+    if (TARGET_APPS[app.appId] !== undefined) {
+      rankings[app.appId] = i + 1;
+      console.log(`  ${i + 1}位: ${TARGET_APPS[app.appId]}`);
     }
   });
 
   APP_ORDER.forEach(id => {
-    if (rankings[id] === 201) console.log(`  圏外: ${TARGET_APPS[id]}`);
+    if (rankings[id] === 201) {
+      console.log(`  圏外: ${TARGET_APPS[id]}`);
+    }
   });
 
   return rankings;
 }
 
+// ==========================================
+// Google スプレッドシートに書き込み
+// ==========================================
 async function writeToSheets(rankings) {
   const serviceAccountKey = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
   const spreadsheetId = process.env.SPREADSHEET_ID;
@@ -126,17 +76,20 @@ async function writeToSheets(rankings) {
   const sheets = google.sheets({ version: 'v4', auth });
   const SHEET_NAME = 'ランキング推移';
 
+  // 今日の日付 (JST)
   const now = new Date();
   const jst = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
   const today = `${jst.getFullYear()}/${String(jst.getMonth() + 1).padStart(2, '0')}/${String(jst.getDate()).padStart(2, '0')}`;
   const timeStr = `${String(jst.getHours()).padStart(2, '0')}:${String(jst.getMinutes()).padStart(2, '0')}`;
 
+  // 行データ作成
   const newRow = [
     today,
     ...APP_ORDER.map(id => rankings[id] === 201 ? '圏外' : rankings[id]),
     timeStr,
   ];
 
+  // 既存データ取得
   let rows = [];
   try {
     const response = await sheets.spreadsheets.values.get({
@@ -145,12 +98,20 @@ async function writeToSheets(rankings) {
     });
     rows = response.data.values || [];
   } catch (e) {
+    // シートが存在しない場合は作成
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId,
-      resource: { requests: [{ addSheet: { properties: { title: SHEET_NAME } } }] },
+      resource: {
+        requests: [{
+          addSheet: {
+            properties: { title: SHEET_NAME },
+          },
+        }],
+      },
     }).catch(() => {});
   }
 
+  // ヘッダー行を確認・作成
   if (rows.length === 0) {
     const headers = ['日付', ...APP_ORDER.map(id => TARGET_APPS[id]), '取得時刻'];
     await sheets.spreadsheets.values.append({
@@ -159,12 +120,17 @@ async function writeToSheets(rankings) {
       valueInputOption: 'USER_ENTERED',
       resource: { values: [headers] },
     });
+    console.log('ヘッダー行を作成しました');
     rows = [headers];
   }
 
+  // 同日データの上書きチェック
   let existingRow = -1;
   for (let i = 1; i < rows.length; i++) {
-    if (rows[i] && rows[i][0] === today) { existingRow = i + 1; break; }
+    if (rows[i] && rows[i][0] === today) {
+      existingRow = i + 1;
+      break;
+    }
   }
 
   if (existingRow > 0) {
@@ -188,14 +154,19 @@ async function writeToSheets(rankings) {
   console.log('書き込みデータ:', newRow);
 }
 
+// ==========================================
+// メイン処理
+// ==========================================
 async function main() {
   console.log('=== Google Play 有料カジノ ランキング集計 開始 ===');
   console.log(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
 
-  if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY)
+  if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
     throw new Error('環境変数 GOOGLE_SERVICE_ACCOUNT_KEY が設定されていません');
-  if (!process.env.SPREADSHEET_ID)
+  }
+  if (!process.env.SPREADSHEET_ID) {
     throw new Error('環境変数 SPREADSHEET_ID が設定されていません');
+  }
 
   const rankings = await fetchRankings();
   console.log('\nランキング結果:', rankings);
