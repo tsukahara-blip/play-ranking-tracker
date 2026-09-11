@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カジノランキング</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #273449;
+    --border: #334155;
+    --text: #f1f5f9;
+    --text-sub: #94a3b8;
+    --text-dim: #64748b;
+    --accent: #6366f1;
+    --good: #10b981;
+    --bad: #f43f5e;
+    --c1: #6366f1;
+    --c2: #0ea5e9;
+    --c3: #10b981;
+    --c4: #f59e0b;
+    --c5: #ec4899;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 24px 20px 48px;
+  }
+  .header {
+    max-width: 1100px;
+    margin: 0 auto 28px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .header-left h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .header-left p { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+  .updated { font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+  .tiles {
+    max-width: 1100px;
+    margin: 0 auto 24px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .tiles { grid-template-columns: 1fr; } }
+  .tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    border-top: 3px solid var(--c1);
+  }
+  .tile:nth-child(1) { border-top-color: var(--c1); }
+  .tile:nth-child(2) { border-top-color: var(--c2); }
+  .tile:nth-child(3) { border-top-color: var(--c3); }
+  .tile:nth-child(4) { border-top-color: var(--c4); }
+  .tile:nth-child(5) { border-top-color: var(--c5); }
+  .tile-name { font-size: 11px; color: var(--text-sub); font-weight: 500; margin-bottom: 10px; line-height: 1.4; min-height: 2.8em; }
+  .tile-rank { font-family: 'JetBrains Mono', monospace; font-size: 36px; font-weight: 600; line-height: 1; }
+  .tile-rank.out { font-size: 18px; color: var(--text-dim); }
+  .tile-delta { font-size: 12px; font-weight: 500; margin-top: 6px; }
+  .delta-up { color: var(--good); }
+  .delta-down { color: var(--bad); }
+  .delta-flat { color: var(--text-dim); }
+  .card {
+    max-width: 1100px;
+    margin: 0 auto 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+  .chart-wrap { position: relative; height: 280px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 10px; color: var(--text-dim); font-weight: 500; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 9px 10px; border-bottom: 1px solid rgba(51,65,85,0.5); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  td:first-child { font-family: 'Inter', sans-serif; color: var(--text-sub); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  .rank-out { color: var(--text-dim); }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+  .loading { text-align: center; padding: 60px; color: var(--text-dim); }
+  .error-msg { background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.3); border-radius: 8px; padding: 16px; color: #fda4af; font-size: 13px; max-width: 1100px; margin: 0 auto; }
+  .table-wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <h1>Google Play カジノ有料ランキング</h1>
+    <p>コムシード株式会社 5タイトル 毎日 09:00 JST 自動取得</p>
+  </div>
+  <div class="updated" id="updated">読み込み中...</div>
+</div>
+<div id="tiles" class="tiles">
+  <div class="loading" style="grid-column:1/-1">データ取得中...</div>
+</div>
+<div class="card">
+  <div class="card-title">ランキング推移（直近30日）</div>
+  <div class="chart-wrap"><canvas id="chart"></canvas></div>
+</div>
+<div class="card">
+  <div class="card-title">データ一覧</div>
+  <div class="table-wrap"><table id="table"><tbody><tr><td colspan="7" class="loading">読み込み中...</td></tr></tbody></table></div>
+</div>
+<script>
+const SPREADSHEET_ID = '1gjmiYLcS2S2HEzdvafeiPJPbeeZiKtfUQ1QKYsXpYpM';
+const SHEET_NAME = 'ランキング推移';
+const APPS = [
+  { name: 'スマスロ 新鬼武者3',         color: '#6366f1' },
+  { name: 'P戦国乙女7',                 color: '#0ea5e9' },
+  { name: 'パチスロ ヴァルヴレイヴ2',   color: '#10b981' },
+  { name: 'パチスロ かぐや様',          color: '#f59e0b' },
+  { name: 'からくりサーカス2 魔王ver.', color: '#ec4899' },
+];
+function rankLabel(v) {
+  if (!v || v === '圏外') return '圏外';
+  const n = parseInt(v);
+  return isNaN(n) ? '圏外' : n;
+}
+function deltaLabel(cur, prev) {
+  if (cur === '圏外' || prev === '圏外') return null;
+  const diff = parseInt(prev) - parseInt(cur);
+  if (isNaN(diff) || diff === 0) return { text: '±0', cls: 'delta-flat' };
+  return diff > 0 ? { text: '▲' + diff, cls: 'delta-up' } : { text: '▼' + Math.abs(diff), cls: 'delta-down' };
+}
+async function loadData() {
+  const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+  const res = await fetch(url);
+  const text = await res.text();
+  const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+  const rows = json.table.rows.map(r => r.c.map(c => c ? (c.v !== null && c.v !== undefined ? String(c.v) : '') : ''));
+  return rows;
+}
+function buildTiles(rows) {
+  const latest = rows[rows.length - 1];
+  const prev = rows.length > 1 ? rows[rows.length - 2] : null;
+  document.getElementById('tiles').innerHTML = APPS.map((app, i) => {
+    const cur = rankLabel(latest[i + 1]);
+    const pre = prev ? rankLabel(prev[i + 1]) : null;
+    const delta = prev ? deltaLabel(cur, pre) : null;
+    const rankHtml = cur === '圏外'
+      ? `<div class="tile-rank out">圏外</div>`
+      : `<div class="tile-rank">${cur}<span style="font-size:14px;color:var(--text-sub);margin-left:2px">位</span></div>`;
+    const deltaHtml = delta
+      ? `<div class="tile-delta ${delta.cls}">${delta.text}</div>`
+      : `<div class="tile-delta delta-flat">-</div>`;
+    return `<div class="tile"><div class="tile-name">${app.name}</div>${rankHtml}${deltaHtml}</div>`;
+  }).join('');
+}
+function buildChart(rows) {
+  const recent = rows.slice(-30);
+  const labels = recent.map(r => r[0].replace(/^\d{4}\//, ''));
+  const datasets = APPS.map((app, i) => ({
+    label: app.name,
+    data: recent.map(r => { const v = parseInt(r[i + 1]); return isNaN(v) ? null : v; }),
+    borderColor: app.color,
+    backgroundColor: app.color + '20',
+    borderWidth: 2,
+    pointRadius: 3,
+    tension: 0.3,
+    spanGaps: true,
+  }));
+  new Chart(document.getElementById('chart').getContext('2d'), {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        y: {
+          reverse: true, min: 1,
+          ticks: { color: '#64748b', callback: v => v + '位' },
+          grid: { color: 'rgba(51,65,85,0.5)' },
+        },
+        x: { ticks: { color: '#64748b', maxRotation: 45 }, grid: { color: 'rgba(51,65,85,0.3)' } },
+      },
+      plugins: {
+        legend: { position: 'bottom', labels: { color: '#94a3b8', boxWidth: 12, padding: 16, font: { size: 11 } } },
+        tooltip: {
+          backgroundColor: '#1e293b', borderColor: '#334155', borderWidth: 1,
+          titleColor: '#f1f5f9', bodyColor: '#94a3b8',
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y != null ? ctx.parsed.y + '位' : '圏外'}` },
+        },
+      },
+    },
+  });
+}
+function buildTable(rows) {
+  const recent = [...rows].reverse().slice(0, 60);
+  const thead = `<thead><tr><th>日付</th>${APPS.map(a => `<th><span class="dot" style="background:${a.color}"></span>${a.name}</th>`).join('')}<th>取得時刻</th></tr></thead>`;
+  const tbody = recent.map(r => {
+    const cells = APPS.map((a, i) => { const v = rankLabel(r[i + 1]); return `<td class="${v === '圏外' ? 'rank-out' : ''}">${v === '圏外' ? '圏外' : v + '位'}</td>`; }).join('');
+    return `<tr><td>${r[0]}</td>${cells}<td>${r[r.length - 1]}</td></tr>`;
+  }).join('');
+  document.getElementById('table').innerHTML = thead + `<tbody>${tbody}</tbody>`;
+}
+async function main() {
+  try {
+    const rows = await loadData();
+    if (!rows.length) throw new Error('データがありません');
+    const latest = rows[rows.length - 1];
+    document.getElementById('updated').textContent = `最終更新: ${latest[0]} ${latest[latest.length - 1]}`;
+    buildTiles(rows);
+    buildChart(rows);
+    buildTable(rows);
+  } catch (e) {
+    document.getElementById('tiles').innerHTML = `<div class="error-msg" style="grid-column:1/-1">⚠️ データ取得に失敗しました。スプレッドシートの共有設定を確認してください。<br><small>${e.message}</small></div>`;
+  }
+}
+main();
+</script>
+</body>
+</html>
