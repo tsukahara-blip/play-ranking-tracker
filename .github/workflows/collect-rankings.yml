@@ -2,13 +2,13 @@ name: Google Play ランキング取得
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *'   # 毎日 UTC 00:00 = JST 09:00
+  workflow_dispatch:        # 手動実行ボタンも有効
 
 jobs:
   collect-rankings:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
 
     steps:
       - name: コードをチェックアウト
@@ -22,19 +22,8 @@ jobs:
       - name: 依存パッケージをインストール
         run: npm install
 
-      - name: Playwright (Chromium) をインストール
-        run: npx playwright install chromium --with-deps
-
       - name: ランキングを取得してスプレッドシートに書き込み
         env:
           GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         run: node src/collect.js
-
-      - name: デバッグ画像をアップロード（失敗時のみ）
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-screenshot
-          path: debug.png
-          if-no-files-found: ignore
