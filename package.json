@@ -7,7 +7,7 @@
     "start": "node src/collect.js"
   },
   "dependencies": {
-    "playwright": "^1.47.0",
+    "google-play-scraper": "^9.1.0",
     "googleapis": "^140.0.0"
   }
 }
