@@ -24,7 +24,9 @@
     --c4: #f59e0b;
     --c5: #ec4899;
   }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
     background: var(--bg);
     color: var(--text);
@@ -34,6 +36,7 @@
     min-height: 100vh;
     padding: 24px 20px 48px;
   }
+
   .header {
     max-width: 1100px;
     margin: 0 auto 28px;
@@ -43,9 +46,26 @@
     gap: 12px;
     flex-wrap: wrap;
   }
-  .header-left h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
-  .header-left p { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
-  .updated { font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+  .header-left h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+
+  .header-left p {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+
+  .updated {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
   .tiles {
     max-width: 1100px;
     margin: 0 auto 24px;
@@ -53,8 +73,10 @@
     grid-template-columns: repeat(5, 1fr);
     gap: 12px;
   }
+
   @media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 480px) { .tiles { grid-template-columns: 1fr; } }
+
   .tile {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -62,18 +84,45 @@
     padding: 16px;
     border-top: 3px solid var(--c1);
   }
+
   .tile:nth-child(1) { border-top-color: var(--c1); }
   .tile:nth-child(2) { border-top-color: var(--c2); }
   .tile:nth-child(3) { border-top-color: var(--c3); }
   .tile:nth-child(4) { border-top-color: var(--c4); }
   .tile:nth-child(5) { border-top-color: var(--c5); }
-  .tile-name { font-size: 11px; color: var(--text-sub); font-weight: 500; margin-bottom: 10px; line-height: 1.4; min-height: 2.8em; }
-  .tile-rank { font-family: 'JetBrains Mono', monospace; font-size: 36px; font-weight: 600; line-height: 1; }
+
+  .tile-name {
+    font-size: 11px;
+    color: var(--text-sub);
+    font-weight: 500;
+    margin-bottom: 10px;
+    line-height: 1.4;
+    min-height: 2.8em;
+  }
+
+  .tile-rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 36px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--text);
+  }
+
   .tile-rank.out { font-size: 18px; color: var(--text-dim); }
-  .tile-delta { font-size: 12px; font-weight: 500; margin-top: 6px; }
-  .delta-up { color: var(--good); }
+
+  .tile-delta {
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .delta-up   { color: var(--good); }
   .delta-down { color: var(--bad); }
   .delta-flat { color: var(--text-dim); }
+
   .card {
     max-width: 1100px;
     margin: 0 auto 20px;
@@ -82,22 +131,83 @@
     border-radius: 10px;
     padding: 20px;
   }
-  .card-title { font-size: 13px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
-  .chart-wrap { position: relative; height: 280px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; padding: 8px 10px; color: var(--text-dim); font-weight: 500; border-bottom: 1px solid var(--border); white-space: nowrap; }
-  td { padding: 9px 10px; border-bottom: 1px solid rgba(51,65,85,0.5); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-  td:first-child { font-family: 'Inter', sans-serif; color: var(--text-sub); }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
+  }
+
+  .chart-wrap {
+    position: relative;
+    height: 280px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    text-align: left;
+    padding: 8px 10px;
+    color: var(--text-dim);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid rgba(51,65,85,0.5);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  td:first-child {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-sub);
+  }
+
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: var(--surface2); }
+
   .rank-out { color: var(--text-dim); }
-  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
-  .loading { text-align: center; padding: 60px; color: var(--text-dim); }
-  .error-msg { background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.3); border-radius: 8px; padding: 16px; color: #fda4af; font-size: 13px; max-width: 1100px; margin: 0 auto; }
+
+  .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+    flex-shrink: 0;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 60px;
+    color: var(--text-dim);
+  }
+
+  .error-msg {
+    background: rgba(244,63,94,0.1);
+    border: 1px solid rgba(244,63,94,0.3);
+    border-radius: 8px;
+    padding: 16px;
+    color: #fda4af;
+    font-size: 13px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
   .table-wrap { overflow-x: auto; }
 </style>
 </head>
 <body>
+
 <div class="header">
   <div class="header-left">
     <h1>Google Play カジノ有料ランキング</h1>
@@ -105,76 +215,120 @@
   </div>
   <div class="updated" id="updated">読み込み中...</div>
 </div>
+
 <div id="tiles" class="tiles">
   <div class="loading" style="grid-column:1/-1">データ取得中...</div>
 </div>
+
 <div class="card">
   <div class="card-title">ランキング推移（直近30日）</div>
-  <div class="chart-wrap"><canvas id="chart"></canvas></div>
+  <div class="chart-wrap">
+    <canvas id="chart"></canvas>
+  </div>
 </div>
+
 <div class="card">
   <div class="card-title">データ一覧</div>
-  <div class="table-wrap"><table id="table"><tbody><tr><td colspan="7" class="loading">読み込み中...</td></tr></tbody></table></div>
+  <div class="table-wrap">
+    <table id="table">
+      <tbody><tr><td colspan="6" class="loading">読み込み中...</td></tr></tbody>
+    </table>
+  </div>
 </div>
+
 <script>
 const SPREADSHEET_ID = '1gjmiYLcS2S2HEzdvafeiPJPbeeZiKtfUQ1QKYsXpYpM';
 const SHEET_NAME = 'ランキング推移';
+
 const APPS = [
-  { name: 'スマスロ 新鬼武者3',         color: '#6366f1' },
-  { name: 'P戦国乙女7',                 color: '#0ea5e9' },
-  { name: 'パチスロ ヴァルヴレイヴ2',   color: '#10b981' },
-  { name: 'パチスロ かぐや様',          color: '#f59e0b' },
-  { name: 'からくりサーカス2 魔王ver.', color: '#ec4899' },
+  { key: 'pssinoni3',    name: 'スマスロ 新鬼武者3',              color: '#6366f1' },
+  { key: 'p_sg8',        name: 'P戦国乙女7',                      color: '#0ea5e9' },
+  { key: 'psvvv2',       name: 'パチスロ ヴァルヴレイヴ2',        color: '#10b981' },
+  { key: 'pskaguya',     name: 'パチスロ かぐや様',               color: '#f59e0b' },
+  { key: 'karakuri2maou','name': 'からくりサーカス2 魔王ver.',     color: '#ec4899' },
 ];
+
 function rankLabel(v) {
-  if (!v || v === '圏外') return '圏外';
+  if (v === '圏外' || v === '' || v == null) return '圏外';
   const n = parseInt(v);
   return isNaN(n) ? '圏外' : n;
 }
+
 function deltaLabel(cur, prev) {
-  if (cur === '圏外' || prev === '圏外') return null;
-  const diff = parseInt(prev) - parseInt(cur);
+  if (cur === '圏外' || prev === '圏外' || cur == null || prev == null) return null;
+  const diff = parseInt(prev) - parseInt(cur); // positive = up
   if (isNaN(diff) || diff === 0) return { text: '±0', cls: 'delta-flat' };
-  return diff > 0 ? { text: '▲' + diff, cls: 'delta-up' } : { text: '▼' + Math.abs(diff), cls: 'delta-down' };
+  if (diff > 0) return { text: '▲' + diff, cls: 'delta-up' };
+  return { text: '▼' + Math.abs(diff), cls: 'delta-down' };
 }
+
 async function loadData() {
   const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
   const res = await fetch(url);
   const text = await res.text();
   const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-  const rows = json.table.rows.map(r => r.c.map(c => c ? (c.v !== null && c.v !== undefined ? String(c.v) : '') : ''));
-  return rows;
+
+  const rows = json.table.rows.map(r => r.c.map(c => {
+    if (!c || c.v === null || c.v === undefined) return '';
+    // gviz API returns dates as Date objects — use formatted value (c.f) when available
+    if (c.f !== null && c.f !== undefined) return String(c.f);
+    return String(c.v);
+  }));
+  const headers = json.table.cols.map(c => c.label);
+
+  // 日付列 + 5アプリ列 + 時刻列
+  // headers: ['日付', app1, app2, ..., app5, '取得時刻']
+  return { headers, rows };
 }
+
 function buildTiles(rows) {
   const latest = rows[rows.length - 1];
-  const prev = rows.length > 1 ? rows[rows.length - 2] : null;
-  document.getElementById('tiles').innerHTML = APPS.map((app, i) => {
-    const cur = rankLabel(latest[i + 1]);
-    const pre = prev ? rankLabel(prev[i + 1]) : null;
+  const prev   = rows.length > 1 ? rows[rows.length - 2] : null;
+
+  const html = APPS.map((app, i) => {
+    const cur  = rankLabel(latest[i + 1]);
+    const pre  = prev ? rankLabel(prev[i + 1]) : null;
     const delta = prev ? deltaLabel(cur, pre) : null;
+
     const rankHtml = cur === '圏外'
       ? `<div class="tile-rank out">圏外</div>`
       : `<div class="tile-rank">${cur}<span style="font-size:14px;color:var(--text-sub);margin-left:2px">位</span></div>`;
+
     const deltaHtml = delta
       ? `<div class="tile-delta ${delta.cls}">${delta.text}</div>`
-      : `<div class="tile-delta delta-flat">-</div>`;
-    return `<div class="tile"><div class="tile-name">${app.name}</div>${rankHtml}${deltaHtml}</div>`;
+      : `<div class="tile-delta delta-flat">初回</div>`;
+
+    return `<div class="tile">
+      <div class="tile-name">${app.name}</div>
+      ${rankHtml}
+      ${deltaHtml}
+    </div>`;
   }).join('');
+
+  document.getElementById('tiles').innerHTML = html;
 }
+
 function buildChart(rows) {
   const recent = rows.slice(-30);
   const labels = recent.map(r => r[0].replace(/^\d{4}\//, ''));
+
   const datasets = APPS.map((app, i) => ({
     label: app.name,
-    data: recent.map(r => { const v = parseInt(r[i + 1]); return isNaN(v) ? null : v; }),
+    data: recent.map(r => {
+      const v = parseInt(r[i + 1]);
+      return isNaN(v) ? null : v;
+    }),
     borderColor: app.color,
     backgroundColor: app.color + '20',
     borderWidth: 2,
     pointRadius: 3,
+    pointHoverRadius: 5,
     tension: 0.3,
     spanGaps: true,
   }));
-  new Chart(document.getElementById('chart').getContext('2d'), {
+
+  const ctx = document.getElementById('chart').getContext('2d');
+  new Chart(ctx, {
     type: 'line',
     data: { labels, datasets },
     options: {
@@ -183,45 +337,84 @@ function buildChart(rows) {
       interaction: { mode: 'index', intersect: false },
       scales: {
         y: {
-          reverse: true, min: 1,
-          ticks: { color: '#64748b', callback: v => v + '位' },
+          reverse: true,
+          min: 1,
+          ticks: {
+            color: '#64748b',
+            callback: v => v + '位',
+            stepSize: 5,
+          },
           grid: { color: 'rgba(51,65,85,0.5)' },
         },
-        x: { ticks: { color: '#64748b', maxRotation: 45 }, grid: { color: 'rgba(51,65,85,0.3)' } },
+        x: {
+          ticks: { color: '#64748b', maxRotation: 45 },
+          grid: { color: 'rgba(51,65,85,0.3)' },
+        },
       },
       plugins: {
-        legend: { position: 'bottom', labels: { color: '#94a3b8', boxWidth: 12, padding: 16, font: { size: 11 } } },
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#94a3b8',
+            boxWidth: 12,
+            padding: 16,
+            font: { size: 11 },
+          },
+        },
         tooltip: {
-          backgroundColor: '#1e293b', borderColor: '#334155', borderWidth: 1,
-          titleColor: '#f1f5f9', bodyColor: '#94a3b8',
-          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y != null ? ctx.parsed.y + '位' : '圏外'}` },
+          backgroundColor: '#1e293b',
+          borderColor: '#334155',
+          borderWidth: 1,
+          titleColor: '#f1f5f9',
+          bodyColor: '#94a3b8',
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y != null ? ctx.parsed.y + '位' : '圏外'}`,
+          },
         },
       },
     },
   });
 }
-function buildTable(rows) {
+
+function buildTable(rows, headers) {
   const recent = [...rows].reverse().slice(0, 60);
-  const thead = `<thead><tr><th>日付</th>${APPS.map(a => `<th><span class="dot" style="background:${a.color}"></span>${a.name}</th>`).join('')}<th>取得時刻</th></tr></thead>`;
+  const appNames = APPS.map(a => a.name);
+
+  const thead = `<thead><tr>
+    <th>日付</th>
+    ${APPS.map((a, i) => `<th><span class="dot" style="background:${a.color}"></span>${a.name}</th>`).join('')}
+    <th>取得時刻</th>
+  </tr></thead>`;
+
   const tbody = recent.map(r => {
-    const cells = APPS.map((a, i) => { const v = rankLabel(r[i + 1]); return `<td class="${v === '圏外' ? 'rank-out' : ''}">${v === '圏外' ? '圏外' : v + '位'}</td>`; }).join('');
+    const cells = APPS.map((a, i) => {
+      const v = rankLabel(r[i + 1]);
+      return `<td class="${v === '圏外' ? 'rank-out' : ''}">${v === '圏外' ? '圏外' : v + '位'}</td>`;
+    }).join('');
     return `<tr><td>${r[0]}</td>${cells}<td>${r[r.length - 1]}</td></tr>`;
   }).join('');
+
   document.getElementById('table').innerHTML = thead + `<tbody>${tbody}</tbody>`;
 }
+
 async function main() {
   try {
-    const rows = await loadData();
+    const { headers, rows } = await loadData();
     if (!rows.length) throw new Error('データがありません');
+
     const latest = rows[rows.length - 1];
     document.getElementById('updated').textContent = `最終更新: ${latest[0]} ${latest[latest.length - 1]}`;
+
     buildTiles(rows);
     buildChart(rows);
-    buildTable(rows);
+    buildTable(rows, headers);
   } catch (e) {
-    document.getElementById('tiles').innerHTML = `<div class="error-msg" style="grid-column:1/-1">⚠️ データ取得に失敗しました。スプレッドシートの共有設定を確認してください。<br><small>${e.message}</small></div>`;
+    document.getElementById('tiles').innerHTML =
+      `<div class="error-msg" style="grid-column:1/-1">⚠️ データ取得に失敗しました。スプレッドシートの共有設定を確認してください。<br><small>${e.message}</small></div>`;
+    console.error(e);
   }
 }
+
 main();
 </script>
 </body>
